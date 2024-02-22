@@ -1,5 +1,6 @@
 namespace SpriteKind {
     export const util = SpriteKind.create()
+    export const npc = SpriteKind.create()
 }
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     flashlight.direction += -45
@@ -8,7 +9,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     flashlight.direction += 45
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.MovingLeft))
+    characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.MovingLeft, Predicate.FacingLeft))
     characterAnimations.loopFrames(
     mySprite,
     [img`
@@ -81,7 +82,7 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . f f f . . . f f . . . . . 
         `],
     200,
-    characterAnimations.rule(Predicate.MovingLeft)
+    characterAnimations.rule(Predicate.MovingLeft, Predicate.FacingLeft)
     )
 })
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
@@ -128,7 +129,7 @@ controller.right.onEvent(ControllerButtonEvent.Released, function () {
     )
 })
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
-    characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.NotMoving))
+    characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingLeft, Predicate.NotMoving))
     characterAnimations.loopFrames(
     mySprite,
     [img`
@@ -167,7 +168,7 @@ controller.left.onEvent(ControllerButtonEvent.Released, function () {
         . . . . . . f f f . . . . . . . 
         `],
     500,
-    characterAnimations.rule(Predicate.NotMoving)
+    characterAnimations.rule(Predicate.FacingLeft, Predicate.NotMoving)
     )
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -247,8 +248,49 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     characterAnimations.rule(Predicate.MovingRight)
     )
 })
+function decision_maker (bool: boolean, num: number) {
+    controller.moveSprite(mySprite, 0, 0)
+    story.startCutscene(function () {
+        if (bool == true) {
+            story.cancelSpriteMovement(mySprite)
+            story.showPlayerChoices("a", "b")
+            if (story.getLastAnswer() == "a") {
+                multilights.toggleLighting(false)
+            } else if (story.getLastAnswer() == "b") {
+                multilights.toggleLighting(true)
+            }
+        } else {
+            tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 24))
+        }
+    })
+}
+scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
+    decision_maker(game.ask("touch the blue thing?"), randint(0, 1))
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
+})
 let flashlight: lightsource.FlashlightLightSource = null
 let mySprite: Sprite = null
+let otherSprite = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . 1 1 1 1 1 . . 1 1 1 1 1 . . 
+    . . 1 1 1 1 1 . . 1 1 1 1 1 . . 
+    . . 1 1 1 1 1 . . 1 1 1 1 1 . . 
+    . . 1 1 1 1 1 . . 1 1 1 1 1 . . 
+    . . 1 1 1 1 1 . . 1 1 1 1 1 . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.npc)
+story.spriteSayText(otherSprite, "test")
+sprites.destroy(otherSprite)
+tiles.setCurrentTilemap(tilemap`level2`)
 mySprite = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
@@ -271,8 +313,6 @@ controller.moveSprite(mySprite, 100, 100)
 scene.cameraFollowSprite(mySprite)
 mySprite.setPosition(21, 101)
 multilights.addLightSource(mySprite, 4)
-tiles.setCurrentTilemap(tilemap`level2`)
-multilights.toggleLighting(true)
 multilights.addFlashLightSource(
 mySprite,
 0,
@@ -280,29 +320,6 @@ mySprite,
 60
 )
 flashlight = multilights.flashlightSourceAttachedTo(mySprite)
-let mySprite2 = sprites.create(img`
-    ........................
-    ........................
-    ........................
-    ........................
-    ..........ffff..........
-    ........ff1111ff........
-    .......fb111111bf.......
-    .......f1111111df.......
-    ......fd1111111ddf......
-    ......fd111111dddf......
-    ......fd111ddddddf......
-    ......fd1dfbddddbf......
-    ......fbddfcdbbbcf......
-    .......f11111bbcf.......
-    .......f1b1fffff........
-    .......fbfc111bf........
-    ........ff1b1bff........
-    .........fbfbfff.f......
-    ..........ffffffff......
-    ............fffff.......
-    ........................
-    ........................
-    ........................
-    ........................
-    `, SpriteKind.Enemy)
+game.onUpdateInterval(5000, function () {
+	
+})
