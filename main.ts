@@ -96,21 +96,52 @@ function decision_maker (bool: boolean, num: number) {
             story.cancelSpriteMovement(mySprite)
             if (num == 1) {
                 story.printCharacterText("are you scared of the dark?")
-                story.showPlayerChoices("yes", "no")
-                if (story.getLastAnswer() == "no") {
+                story.showPlayerChoices("Yes", "No", "Who are you?")
+                if (story.getLastAnswer() == "No") {
                     multilights.toggleLighting(false)
                     controller.moveSprite(mySprite, 100, 100)
                     lighting = 0
-                } else if (story.getLastAnswer() == "yes") {
+                } else if (story.getLastAnswer() == "Yes") {
                     multilights.toggleLighting(true)
-                    story.printCharacterText("face your fears")
+                    story.printCharacterText("Face your fears")
                     tiles.placeOnTile(mySprite, tiles.getTileLocation(7, 24))
                     controller.moveSprite(mySprite, 100, 100)
                     lighting = 1
+                } else if (story.getLastAnswer() == "Who are you?") {
+                    story.printCharacterText("Thats not important")
                 }
             } else if (num == 0) {
-                story.printCharacterText("hello")
-                controller.moveSprite(mySprite, 100, 100)
+                story.printCharacterText("hello human")
+                story.showPlayerChoices("who are you?", "where am i?", "goodbye")
+                if (story.getLastAnswer() == "who are you") {
+                    story.printCharacterText("your imagination")
+                    story.showPlayerChoices("what?", "where am i?", "goodbye")
+                    controller.moveSprite(mySprite, 100, 100)
+                    if (story.getLastAnswer() == "who are you") {
+                        story.printCharacterText("your imagination")
+                        controller.moveSprite(mySprite, 100, 100)
+                    } else if (story.getLastAnswer() == "where am i?") {
+                        story.printCharacterText("your human mind could never comprehend")
+                        controller.moveSprite(mySprite, 100, 100)
+                    } else if (story.getLastAnswer() == "goodbye") {
+                        controller.moveSprite(mySprite, 100, 100)
+                    }
+                } else if (story.getLastAnswer() == "where am i?") {
+                    story.printCharacterText("your human mind could never comprehend")
+                    story.showPlayerChoices("what?", "who are you?", "goodbye")
+                    if (story.getLastAnswer() == "who are you") {
+                        story.printCharacterText("your imagination")
+                        controller.moveSprite(mySprite, 100, 100)
+                    } else if (story.getLastAnswer() == "where am i?") {
+                        story.printCharacterText("your human mind could never comprehend")
+                        controller.moveSprite(mySprite, 100, 100)
+                    } else if (story.getLastAnswer() == "goodbye") {
+                        controller.moveSprite(mySprite, 100, 100)
+                    }
+                    controller.moveSprite(mySprite, 100, 100)
+                } else if (story.getLastAnswer() == "goodbye") {
+                    controller.moveSprite(mySprite, 100, 100)
+                }
             }
         } else {
             controller.moveSprite(mySprite, 100, 100)

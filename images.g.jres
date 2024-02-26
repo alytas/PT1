@@ -1,4 +1,9 @@
 {
+    "image1": {
+        "data": "hwQQABAAAAAAAAAAAAAAAP8A/wAAAAAAH//d/wAAAPAR393d/wAA/xHf3d39///PEd+d3f38z8wR393dz8zPzBHf3d3PzM/MEfHd3c/Mz8wR8d3dz8zPzBH/3d3P/M/MEd/d3f/8zMwR39nd3f//zx//3d39DwD///D///8AAAAAAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "gojo"
+    },
     "*": {
         "mimeType": "image/x-mkcd-f4",
         "dataEncoding": "base64",
