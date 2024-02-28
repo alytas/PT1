@@ -1,5 +1,5 @@
 {
-    "name": "working PT1",
+    "name": "working PT1 - Copy",
     "description": "",
     "dependencies": {
         "device": "*",
@@ -7,7 +7,8 @@
         "arcade-character-animations": "github:microsoft/arcade-character-animations#v0.0.2",
         "pxt-lantern": "github:felixtsu/pxt-lantern#v0.2.1",
         "arcade-story": "github:microsoft/arcade-storytelling#v1.0.3",
-        "Timers": "github:microsoft/arcade-timers#v1.1.0"
+        "Timers": "github:microsoft/arcade-timers#v1.1.0",
+        "sprite-scaling": "*"
     },
     "files": [
         "main.blocks",

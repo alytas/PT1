@@ -89,12 +89,12 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 	
 })
-function decision_maker (bool: boolean, num: number) {
+function decision_maker (initialQuestion: boolean, dialogue: number, boss: number) {
     controller.moveSprite(mySprite, 0, 0)
     story.startCutscene(function () {
-        if (bool == true) {
+        if (initialQuestion == true) {
             story.cancelSpriteMovement(mySprite)
-            if (num == 1) {
+            if (dialogue == 1) {
                 story.printCharacterText("are you scared of the dark?")
                 story.showPlayerChoices("Yes", "No", "Who are you?")
                 if (story.getLastAnswer() == "No") {
@@ -110,7 +110,7 @@ function decision_maker (bool: boolean, num: number) {
                 } else if (story.getLastAnswer() == "Who are you?") {
                     story.printCharacterText("Thats not important")
                 }
-            } else if (num == 0) {
+            } else if (dialogue == 0) {
                 story.printCharacterText("hello human")
                 story.showPlayerChoices("who are you?", "where am i?", "goodbye")
                 if (story.getLastAnswer() == "who are you") {
@@ -147,6 +147,28 @@ function decision_maker (bool: boolean, num: number) {
             controller.moveSprite(mySprite, 100, 100)
         }
     })
+    for (let index = 0; index < boss; index++) {
+        console.log("YES")
+        bosscheck = randint(0, 4)
+        bosstype = list._pickRandom()
+    }
+    if (bosstype.equals(assets.image`maybe gojo`)) {
+        pigon = true
+        gojo = sprites.create(assets.image`maybe gojo`, SpriteKind.Enemy)
+        tiles.placeOnTile(gojo, tiles.getTileLocation(29, 4))
+    } else if (bosstype.equals(assets.image`pigon`)) {
+        pigon = true
+        pigon2 = sprites.create(assets.image`pigon`, SpriteKind.Enemy)
+        tiles.placeOnTile(pigon2, tiles.getTileLocation(29, 4))
+    } else if (bosstype.equals(assets.image`box of mail`)) {
+        mailbox = true
+        boxmail = sprites.create(assets.image`box of mail`, SpriteKind.Enemy)
+        tiles.placeOnTile(boxmail, tiles.getTileLocation(29, 4))
+    } else if (bosstype.equals(assets.image`suspiciously close to Godzilla`)) {
+        godzilla = true
+        zillagod = sprites.create(assets.image`suspiciously close to Godzilla`, SpriteKind.Enemy)
+        tiles.placeOnTile(zillagod, tiles.getTileLocation(29, 4))
+    }
 }
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingDown, Predicate.NotMoving))
@@ -440,7 +462,7 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
-    decision_maker(game.ask("touch the blue thing?"), randint(0, 1))
+    decision_maker(game.ask("touch the blue thing?"), randint(0, 1), randint(0, 3))
     tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
 })
 controller.up.onEvent(ControllerButtonEvent.Released, function () {
@@ -567,7 +589,17 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         flashlight.direction = 90
     }
 })
+let zillagod: Sprite = null
+let godzilla = false
+let boxmail: Sprite = null
+let mailbox = false
+let pigon2: Sprite = null
+let gojo: Sprite = null
+let pigon = false
+let bosstype: Image = null
+let bosscheck = 0
 let lighting = 0
+let list: Image[] = []
 let flashlightangle = 0
 let flashlight: lightsource.FlashlightLightSource = null
 let mySprite: Sprite = null
@@ -612,7 +644,7 @@ mySprite = sprites.create(img`
     `, SpriteKind.Player)
 controller.moveSprite(mySprite, 100, 100)
 scene.cameraFollowSprite(mySprite)
-mySprite.setPosition(21, 101)
+tiles.placeOnTile(mySprite, tiles.getTileLocation(2, 4))
 multilights.addLightSource(mySprite, 4)
 multilights.addFlashLightSource(
 mySprite,
@@ -622,6 +654,12 @@ mySprite,
 )
 flashlight = multilights.flashlightSourceAttachedTo(mySprite)
 flashlightangle = 0
+list = [
+assets.image`maybe gojo`,
+assets.image`pigon`,
+assets.image`box of mail`,
+assets.image`suspiciously close to Godzilla`
+]
 game.onUpdateInterval(5000, function () {
 	
 })
