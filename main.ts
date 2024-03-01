@@ -83,6 +83,10 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         flashlight.direction = -90
     }
 })
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile6`, function (sprite, location) {
+    EnergyBar.value += 25
+    tiles.setTileAt(tiles.getTileLocation(location.column, location.row), sprites.castle.tileDarkGrass3)
+})
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 	
 })
@@ -111,11 +115,11 @@ function decision_maker (initialQuestion: boolean, dialogue: number, boss: numbe
                     story.printCharacterText("Thats not important")
                 }
             } else if (dialogue == 0) {
-                story.printCharacterText("hello human")
-                story.showPlayerChoices("who are you?", "where am i?", "goodbye")
-                if (story.getLastAnswer() == "who are you") {
+                story.printCharacterText("Hello")
+                story.showPlayerChoices("Who are you?", "Where am i?", "Goodbye")
+                if (story.getLastAnswer() == "Who are you") {
                     story.printCharacterText("your imagination")
-                    story.showPlayerChoices("what?", "where am i?", "goodbye")
+                    story.showPlayerChoices("What?", "Where am i?", "Goodbye")
                     controller.moveSprite(mySprite, 100, 100)
                     if (story.getLastAnswer() == "who are you") {
                         story.printCharacterText("your imagination")
@@ -142,7 +146,9 @@ function decision_maker (initialQuestion: boolean, dialogue: number, boss: numbe
                 } else if (story.getLastAnswer() == "goodbye") {
                     controller.moveSprite(mySprite, 100, 100)
                 }
+                controller.moveSprite(mySprite, 100, 100)
             }
+            controller.moveSprite(mySprite, 100, 100)
         } else {
             controller.moveSprite(mySprite, 100, 100)
         }
@@ -170,6 +176,14 @@ function decision_maker (initialQuestion: boolean, dialogue: number, boss: numbe
         tiles.placeOnTile(zillagod, tiles.getTileLocation(29, 4))
     }
 }
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile7`, function (sprite, location) {
+    HealthBar.value += 25
+    tiles.setTileAt(tiles.getTileLocation(location.column, location.row), sprites.castle.tileDarkGrass3)
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite, location) {
+    decision_maker(game.ask("touch the blue thing?"), randint(0, 1), randint(0, 3))
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
+})
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingDown, Predicate.NotMoving))
     characterAnimations.loopFrames(
@@ -461,10 +475,6 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         flashlight.direction = 0
     }
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
-    decision_maker(game.ask("touch the blue thing?"), randint(0, 1), randint(0, 3))
-    tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
-})
 controller.up.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingUp, Predicate.NotMoving))
     characterAnimations.loopFrames(
@@ -599,6 +609,8 @@ let pigon = false
 let bosstype: Image = null
 let bosscheck = 0
 let lighting = 0
+let HealthBar: StatusBarSprite = null
+let EnergyBar: StatusBarSprite = null
 let list: Image[] = []
 let flashlightangle = 0
 let flashlight: lightsource.FlashlightLightSource = null
@@ -660,6 +672,19 @@ assets.image`pigon`,
 assets.image`box of mail`,
 assets.image`suspiciously close to Godzilla`
 ]
+EnergyBar = statusbars.create(3, 20, StatusBarKind.Energy)
+EnergyBar.max = 100
+EnergyBar.value = 0
+EnergyBar.attachToSprite(mySprite, 4, 0)
+EnergyBar.setColor(9, 12)
+EnergyBar.setBarBorder(1, 15)
+EnergyBar.positionDirection(CollisionDirection.Left)
+HealthBar = statusbars.create(20, 3, StatusBarKind.Health)
+HealthBar.max = 100
+HealthBar.value = 100
+HealthBar.attachToSprite(mySprite, -24, 0)
+HealthBar.setColor(2, 12)
+HealthBar.setBarBorder(1, 15)
 game.onUpdateInterval(5000, function () {
 	
 })
