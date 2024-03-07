@@ -2,6 +2,13 @@ namespace SpriteKind {
     export const util = SpriteKind.create()
     export const npc = SpriteKind.create()
 }
+namespace StatusBarKind {
+    export const Oxygen = StatusBarKind.create()
+}
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile19`, function (sprite, location) {
+    EnergyBar.value += 25
+    tiles.setTileAt(tiles.getTileLocation(location.column, location.row), assets.tile`myTile8`)
+})
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingUp, Predicate.MovingUp))
     characterAnimations.loopFrames(
@@ -82,10 +89,6 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         flashlightangle = 1
         flashlight.direction = -90
     }
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile6`, function (sprite, location) {
-    EnergyBar.value += 25
-    tiles.setTileAt(tiles.getTileLocation(location.column, location.row), sprites.castle.tileDarkGrass3)
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 	
@@ -196,6 +199,7 @@ function decision_maker (initialQuestion: boolean, dialogue: number, enemies: nu
                     tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
                     controller.moveSprite(mySprite, 100, 100)
                     lighting = 1
+                    StartingRoom = false
                 } else if (story.getLastAnswer() == "Who are you?") {
                     story.printCharacterText("Thats not important.")
                     story.printCharacterText("You need to find the power and get out... We dont know what they are.")
@@ -836,6 +840,7 @@ let bosscheck = 0
 let projectile: Sprite = null
 let lighting = 0
 let room1 = false
+let StartingRoom = false
 let HealthBar: StatusBarSprite = null
 let EnergyBar: StatusBarSprite = null
 let list: Image[] = []
@@ -948,17 +953,40 @@ img`
     . . . . . . . . . 6 6 6 6 6 . . 
     `
 ]
-EnergyBar = statusbars.create(3, 20, StatusBarKind.Energy)
+EnergyBar = statusbars.create(3, 20, StatusBarKind.Oxygen)
 EnergyBar.max = 100
 EnergyBar.value = 0
-EnergyBar.attachToSprite(mySprite, 4, 0)
-EnergyBar.setColor(9, 12)
+EnergyBar.attachToSprite(mySprite, 8, 0)
+EnergyBar.setColor(5, 12)
 EnergyBar.setBarBorder(1, 15)
 EnergyBar.positionDirection(CollisionDirection.Left)
+let OxygenBar = statusbars.create(3, 20, StatusBarKind.Oxygen)
+OxygenBar.max = 100
+OxygenBar.value = 100
+OxygenBar.attachToSprite(mySprite, 4, 0)
+OxygenBar.setColor(9, 12)
+OxygenBar.setBarBorder(1, 15)
+OxygenBar.positionDirection(CollisionDirection.Left)
 HealthBar = statusbars.create(20, 3, StatusBarKind.Health)
 HealthBar.max = 100
 HealthBar.value = 100
 HealthBar.attachToSprite(mySprite, -24, 0)
 HealthBar.setColor(2, 12)
 HealthBar.setBarBorder(1, 15)
+StartingRoom = true
 room1 = false
+let room2 = false
+let room3 = false
+game.onUpdate(function () {
+    if (OxygenBar.value == 0) {
+        game.setGameOverMessage(false, "YOU RAN OUT OF OXYGEN!")
+        game.gameOver(false)
+    }
+})
+game.onUpdateInterval(1000, function () {
+    if (StartingRoom == true) {
+    	
+    } else {
+        OxygenBar.value += -5
+    }
+})
