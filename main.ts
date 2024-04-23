@@ -208,6 +208,7 @@ function decision_maker (initialQuestion: boolean, dialogue: number, enemies: nu
         if (initialQuestion == true) {
             story.cancelSpriteMovement(mySprite)
             if (dialogue == 1) {
+                text = true
                 story.printCharacterText("Hello? Is anyone there?")
                 story.showPlayerChoices("Yes, Hello?", "Who are you?")
                 if (story.getLastAnswer() == "Yes, Hello?") {
@@ -215,31 +216,62 @@ function decision_maker (initialQuestion: boolean, dialogue: number, enemies: nu
                     story.printCharacterText("We can't talk right now, you need to find the power and get rid of them... QUICK.")
                     tiles.setCurrentTilemap(tilemap`level6`)
                     tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
+                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+                    spawn_location_amount = spawn_locations.length
+                    enemy_amount = spawn_location_amount
                     controller.moveSprite(mySprite, 100, 100)
                     lighting = 1
                     StartingRoom = false
                     switch_flipped = false
+                    text = false
                 } else if (story.getLastAnswer() == "Who are you?") {
+                    multilights.toggleLighting(true)
                     story.printCharacterText("Thats not important.")
                     story.printCharacterText("You need to find the power and get out... We dont know what they are.")
                     tiles.setCurrentTilemap(tilemap`level6`)
                     tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
+                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+                    spawn_location_amount = spawn_locations.length
+                    enemy_amount = spawn_location_amount
                     controller.moveSprite(mySprite, 100, 100)
                     lighting = 1
                     StartingRoom = false
                     switch_flipped = false
+                    text = false
                 }
             } else if (dialogue == 0) {
+                text = true
                 story.printCharacterText("Hello?")
                 story.showPlayerChoices("Who are you?", "Where am I?", "(walk away)")
                 if (story.getLastAnswer() == "Who are you?") {
+                    multilights.toggleLighting(true)
                     story.printCharacterText("[STATIC RADIO NOISES] YOU NEED TO GET OUT NOW [STATIC RADIO NOISES]")
+                    tiles.setCurrentTilemap(tilemap`level6`)
+                    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
+                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+                    spawn_location_amount = spawn_locations.length
+                    lighting = 1
+                    enemy_amount = spawn_location_amount
+                    StartingRoom = false
+                    switch_flipped = false
+                    text = false
                     controller.moveSprite(mySprite, 100, 100)
                 } else if (story.getLastAnswer() == "Where am I?") {
+                    multilights.toggleLighting(true)
                     story.printCharacterText("Youve awaken from your coma, there's no time to talk...")
                     story.printCharacterText("You need to find the power and get out... NOW.")
+                    tiles.setCurrentTilemap(tilemap`level6`)
+                    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
+                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+                    spawn_location_amount = spawn_locations.length
+                    enemy_amount = spawn_location_amount
+                    lighting = 1
+                    StartingRoom = false
+                    switch_flipped = false
+                    text = false
                     controller.moveSprite(mySprite, 100, 100)
                 } else if (story.getLastAnswer() == "(walk away)") {
+                    text = false
                     controller.moveSprite(mySprite, 100, 100)
                 }
                 controller.moveSprite(mySprite, 100, 100)
@@ -248,178 +280,16 @@ function decision_maker (initialQuestion: boolean, dialogue: number, enemies: nu
         } else {
             controller.moveSprite(mySprite, 100, 100)
         }
+        story.cancelCurrentCutscene()
+        for (let index = 0; index < enemies; index++) {
+            bosstype = list.removeAt(enemies)
+            console.log("YES")
+        }
+        for (let index = 0; index < spawn_location_amount; index++) {
+            enemy_spawner()
+            console.log("no")
+        }
     })
-    for (let index = 0; index < enemies; index++) {
-        bosstype = list.removeAt(enemies)
-        console.log("YES")
-    }
-    if (bosstype.equals(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . f f . . . . . . . . . . . 
-        . . f 1 1 f e . . e e e e e e . 
-        . f 1 7 7 1 f e e e e e e e e e 
-        . f 1 7 5 7 1 f e e e . . . . . 
-        . . f 1 7 7 1 f e e e e e . . . 
-        . . . f 1 1 f e e e e . e e . . 
-        . . . e f f e e e e . . . e . . 
-        . . . e e e e e e e . . . . e . 
-        . . . e . . e e e e e . . . e e 
-        . . e e . . . . . . e . . . . e 
-        . e e . . . . . . . e . . . . . 
-        e e . . . . . . . . e e . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `)) {
-        if (StartingRoom == false) {
-            gojoe = true
-            gojo = sprites.create(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . f f . . . . . . . . . . . 
-                . . f 1 1 f e . . e e e e e e . 
-                . f 1 7 7 1 f e e e e e e e e e 
-                . f 1 7 5 7 1 f e e e . . . . . 
-                . . f 1 7 7 1 f e e e e e . . . 
-                . . . f 1 1 f e e e e . e e . . 
-                . . . e f f e e e e . . . e . . 
-                . . . e e e e e e e . . . . e . 
-                . . . e . . e e e e e . . . e e 
-                . . e e . . . . . . e . . . . e 
-                . e e . . . . . . . e . . . . . 
-                e e . . . . . . . . e e . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                `, SpriteKind.Enemy)
-            console.log("1")
-            tiles.placeOnRandomTile(gojo, assets.tile`myTile10`)
-        }
-    } else if (bosstype.equals(img`
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        b b . . . . . . . . . . . . . b b 
-        b b b . . . . . . . . . . . b b b 
-        b c b b . . b b b b b . . b b c b 
-        b b c b b b 1 1 1 1 1 b b b c b b 
-        . b c c b b 1 1 2 1 1 b b c c b . 
-        . b b c c b 1 2 f 2 1 b c c b b . 
-        . . b b b b 1 1 2 1 1 b b b b . . 
-        . . . . . b 1 1 1 1 1 b . . . . . 
-        . . . . . . b b b b b . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . . 
-        `)) {
-        if (StartingRoom == false) {
-            pigon = true
-            pigon2 = sprites.create(img`
-                . . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                b b . . . . . . . . . . . . . b b 
-                b b b . . . . . . . . . . . b b b 
-                b c b b . . b b b b b . . b b c b 
-                b b c b b b 1 1 1 1 1 b b b c b b 
-                . b c c b b 1 1 2 1 1 b b c c b . 
-                . b b c c b 1 2 f 2 1 b c c b b . 
-                . . b b b b 1 1 2 1 1 b b b b . . 
-                . . . . . b 1 1 1 1 1 b . . . . . 
-                . . . . . . b b b b b . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . . 
-                `, SpriteKind.Enemy)
-            console.log("2")
-            tiles.placeOnRandomTile(pigon2, assets.tile`myTile10`)
-        }
-    } else if (bosstype.equals(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . 1 1 1 1 . . . . . . . . . . 
-        . 1 1 1 1 2 1 . . . . . . . . . 
-        . 1 1 f f 1 1 . . . . . . . . . 
-        . 1 1 f f 1 2 . . 8 8 . . . . . 
-        . 1 2 1 2 2 1 . 8 . . . . . . . 
-        . . 1 2 1 1 2 2 8 . . . . . 2 . 
-        . . . . . . . . 2 2 2 2 2 2 2 . 
-        . . . . . . . . 2 . . 3 3 2 . . 
-        . . . . . . . 2 2 . . . . 2 3 . 
-        . . . . . . . 2 . . . . . 2 3 . 
-        . . . . . . . . 2 . . . . 2 . . 
-        . . . . . . . . 2 . . . . . 2 . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `)) {
-        if (StartingRoom == false) {
-            mailbox = true
-            boxmail = sprites.create(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . 1 1 1 1 . . . . . . . . . . 
-                . 1 1 1 1 2 1 . . . . . . . . . 
-                . 1 1 f f 1 1 . . . . . . . . . 
-                . 1 1 f f 1 2 . . 8 8 . . . . . 
-                . 1 2 1 2 2 1 . 8 . . . . . . . 
-                . . 1 2 1 1 2 2 8 . . . . . 2 . 
-                . . . . . . . . 2 2 2 2 2 2 2 . 
-                . . . . . . . . 2 . . 3 3 2 . . 
-                . . . . . . . 2 2 . . . . 2 3 . 
-                . . . . . . . 2 . . . . . 2 3 . 
-                . . . . . . . . 2 . . . . 2 . . 
-                . . . . . . . . 2 . . . . . 2 . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                `, SpriteKind.Enemy)
-            console.log("3")
-            tiles.placeOnRandomTile(boxmail, assets.tile`myTile10`)
-        }
-    } else if (bosstype.equals(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . 6 6 6 6 6 6 6 . . . 
-        . . . . 6 6 6 8 8 8 8 6 6 6 . . 
-        . . . 6 6 6 6 6 6 8 6 6 6 6 . . 
-        . . 6 6 6 f 6 6 6 6 6 6 6 6 6 . 
-        . . 6 6 6 f f 6 6 6 6 f f f 6 . 
-        . 6 6 6 6 f f f 6 6 6 f f 6 6 6 
-        6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
-        6 . . 6 6 8 8 6 6 6 6 6 6 6 6 6 
-        . . . . . 6 8 8 8 8 8 8 6 6 6 6 
-        . . . . . 6 6 6 6 6 6 8 8 6 6 6 
-        . . . . . . 6 6 6 6 6 6 8 8 6 . 
-        . . . . . . . 6 6 6 6 6 6 6 6 . 
-        . . . . . . . . 6 6 6 6 6 6 6 . 
-        . . . . . . . . . 6 6 6 6 6 . . 
-        `)) {
-        if (StartingRoom == false) {
-            godzilla = true
-            zillagod = sprites.create(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . 6 6 6 6 6 6 6 . . . 
-                . . . . 6 6 6 8 8 8 8 6 6 6 . . 
-                . . . 6 6 6 6 6 6 8 6 6 6 6 . . 
-                . . 6 6 6 f 6 6 6 6 6 6 6 6 6 . 
-                . . 6 6 6 f f 6 6 6 6 f f f 6 . 
-                . 6 6 6 6 f f f 6 6 6 f f 6 6 6 
-                6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
-                6 . . 6 6 8 8 6 6 6 6 6 6 6 6 6 
-                . . . . . 6 8 8 8 8 8 8 6 6 6 6 
-                . . . . . 6 6 6 6 6 6 8 8 6 6 6 
-                . . . . . . 6 6 6 6 6 6 8 8 6 . 
-                . . . . . . . 6 6 6 6 6 6 6 6 . 
-                . . . . . . . . 6 6 6 6 6 6 6 . 
-                . . . . . . . . . 6 6 6 6 6 . . 
-                `, SpriteKind.Enemy)
-            console.log("4")
-            tiles.placeOnRandomTile(zillagod, assets.tile`myTile10`)
-        }
-    }
 }
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingDown, Predicate.NotMoving))
@@ -463,6 +333,112 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
     500,
     characterAnimations.rule(Predicate.NotMoving, Predicate.FacingDown)
     )
+})
+function enemy_spawner () {
+    if (bosstype == 0) {
+        if (StartingRoom == false) {
+            gojoe = true
+            gojo = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . f f . . . . . . . . . . . 
+                . . f 1 1 f e . . e e e e e e . 
+                . f 1 7 7 1 f e e e e e e e e e 
+                . f 1 7 5 7 1 f e e e . . . . . 
+                . . f 1 7 7 1 f e e e e e . . . 
+                . . . f 1 1 f e e e e . e e . . 
+                . . . e f f e e e e . . . e . . 
+                . . . e e e e e e e . . . . e . 
+                . . . e . . e e e e e . . . e e 
+                . . e e . . . . . . e . . . . e 
+                . e e . . . . . . . e . . . . . 
+                e e . . . . . . . . e e . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Enemy)
+            tiles.placeOnTile(gojo, spawn_locations.pop())
+            console.log("1")
+        }
+    } else if (bosstype == 1) {
+        if (StartingRoom == false) {
+            pigon = true
+            pigon2 = sprites.create(img`
+                . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                b b . . . . . . . . . . . . . b b 
+                b b b . . . . . . . . . . . b b b 
+                b c b b . . b b b b b . . b b c b 
+                b b c b b b 1 1 1 1 1 b b b c b b 
+                . b c c b b 1 1 2 1 1 b b c c b . 
+                . b b c c b 1 2 f 2 1 b c c b b . 
+                . . b b b b 1 1 2 1 1 b b b b . . 
+                . . . . . b 1 1 1 1 1 b . . . . . 
+                . . . . . . b b b b b . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Enemy)
+            tiles.placeOnTile(pigon2, spawn_locations.pop())
+            console.log("2")
+        }
+    } else if (bosstype == 2) {
+        if (StartingRoom == false) {
+            mailbox = true
+            boxmail = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . 1 1 1 1 . . . . . . . . . . 
+                . 1 1 1 1 2 1 . . . . . . . . . 
+                . 1 1 f f 1 1 . . . . . . . . . 
+                . 1 1 f f 1 2 . . 8 8 . . . . . 
+                . 1 2 1 2 2 1 . 8 . . . . . . . 
+                . . 1 2 1 1 2 2 8 . . . . . 2 . 
+                . . . . . . . . 2 2 2 2 2 2 2 . 
+                . . . . . . . . 2 . . 3 3 2 . . 
+                . . . . . . . 2 2 . . . . 2 3 . 
+                . . . . . . . 2 . . . . . 2 3 . 
+                . . . . . . . . 2 . . . . 2 . . 
+                . . . . . . . . 2 . . . . . 2 . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Enemy)
+            tiles.placeOnTile(boxmail, spawn_locations.pop())
+            console.log("3")
+        }
+    } else if (bosstype == 3) {
+        if (StartingRoom == false) {
+            godzilla = true
+            zillagod = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . 6 6 6 6 6 6 6 . . . 
+                . . . . 6 6 6 8 8 8 8 6 6 6 . . 
+                . . . 6 6 6 6 6 6 8 6 6 6 6 . . 
+                . . 6 6 6 f 6 6 6 6 6 6 6 6 6 . 
+                . . 6 6 6 f f 6 6 6 6 f f f 6 . 
+                . 6 6 6 6 f f f 6 6 6 f f 6 6 6 
+                6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+                6 . . 6 6 8 8 6 6 6 6 6 6 6 6 6 
+                . . . . . 6 8 8 8 8 8 8 6 6 6 6 
+                . . . . . 6 6 6 6 6 6 8 8 6 6 6 
+                . . . . . . 6 6 6 6 6 6 8 8 6 . 
+                . . . . . . . 6 6 6 6 6 6 6 6 . 
+                . . . . . . . . 6 6 6 6 6 6 6 . 
+                . . . . . . . . . 6 6 6 6 6 . . 
+                `, SpriteKind.Enemy)
+            tiles.placeOnTile(zillagod, spawn_locations.pop())
+            console.log("4")
+        }
+    }
+}
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile25`, function (sprite, location) {
+    multilights.toggleLighting(false)
+    room4 = true
+    escape_hatch = true
+    tiles.setCurrentTilemap(tilemap`level20`)
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.MovingLeft, Predicate.FacingLeft))
@@ -727,7 +703,7 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
-    decision_maker(game.ask("Pick up the radio?"), randint(0, 1), randint(0, 3))
+    decision_maker(game.ask("Pick up the radio?"), randint(0, 1), randint(1, 4))
     tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
 })
 controller.up.onEvent(ControllerButtonEvent.Released, function () {
@@ -864,6 +840,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite, 
     room2 = true
     switch_flipped = true
 })
+let escape_hatch = false
 let zillagod: Sprite = null
 let godzilla = false
 let boxmail: Sprite = null
@@ -872,17 +849,22 @@ let pigon2: Sprite = null
 let pigon = false
 let gojo: Sprite = null
 let gojoe = false
-let bosstype: Image = null
+let bosstype = 0
+let enemy_amount = 0
+let spawn_location_amount = 0
+let spawn_locations: tiles.Location[] = []
 let projectile: Sprite = null
 let switch_flipped = false
 let lighting = 0
+let room4 = false
 let room3 = false
 let room2 = false
 let room1 = false
+let text = false
 let StartingRoom = false
 let OxygenBar: StatusBarSprite = null
 let EnergyBar: StatusBarSprite = null
-let list: Image[] = []
+let list: number[] = []
 let flashlightangle = 0
 let flashlight: lightsource.FlashlightLightSource = null
 let mySprite: Sprite = null
@@ -918,79 +900,10 @@ mySprite,
 flashlight = multilights.flashlightSourceAttachedTo(mySprite)
 flashlightangle = 0
 list = [
-img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . f f . . . . . . . . . . . 
-    . . f 1 1 f e . . e e e e e e . 
-    . f 1 7 7 1 f e e e e e e e e e 
-    . f 1 7 5 7 1 f e e e . . . . . 
-    . . f 1 7 7 1 f e e e e e . . . 
-    . . . f 1 1 f e e e e . e e . . 
-    . . . e f f e e e e . . . e . . 
-    . . . e e e e e e e . . . . e . 
-    . . . e . . e e e e e . . . e e 
-    . . e e . . . . . . e . . . . e 
-    . e e . . . . . . . e . . . . . 
-    e e . . . . . . . . e e . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `,
-img`
-    . . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    b b . . . . . . . . . . . . . b b 
-    b b b . . . . . . . . . . . b b b 
-    b c b b . . b b b b b . . b b c b 
-    b b c b b b 1 1 1 1 1 b b b c b b 
-    . b c c b b 1 1 2 1 1 b b c c b . 
-    . b b c c b 1 2 f 2 1 b c c b b . 
-    . . b b b b 1 1 2 1 1 b b b b . . 
-    . . . . . b 1 1 1 1 1 b . . . . . 
-    . . . . . . b b b b b . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . . 
-    `,
-img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . 1 1 1 1 . . . . . . . . . . 
-    . 1 1 1 1 2 1 . . . . . . . . . 
-    . 1 1 f f 1 1 . . . . . . . . . 
-    . 1 1 f f 1 2 . . 8 8 . . . . . 
-    . 1 2 1 2 2 1 . 8 . . . . . . . 
-    . . 1 2 1 1 2 2 8 . . . . . 2 . 
-    . . . . . . . . 2 2 2 2 2 2 2 . 
-    . . . . . . . . 2 . . 3 3 2 . . 
-    . . . . . . . 2 2 . . . . 2 3 . 
-    . . . . . . . 2 . . . . . 2 3 . 
-    . . . . . . . . 2 . . . . 2 . . 
-    . . . . . . . . 2 . . . . . 2 . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `,
-img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . 6 6 6 6 6 6 6 . . . 
-    . . . . 6 6 6 8 8 8 8 6 6 6 . . 
-    . . . 6 6 6 6 6 6 8 6 6 6 6 . . 
-    . . 6 6 6 f 6 6 6 6 6 6 6 6 6 . 
-    . . 6 6 6 f f 6 6 6 6 f f f 6 . 
-    . 6 6 6 6 f f f 6 6 6 f f 6 6 6 
-    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
-    6 . . 6 6 8 8 6 6 6 6 6 6 6 6 6 
-    . . . . . 6 8 8 8 8 8 8 6 6 6 6 
-    . . . . . 6 6 6 6 6 6 8 8 6 6 6 
-    . . . . . . 6 6 6 6 6 6 8 8 6 . 
-    . . . . . . . 6 6 6 6 6 6 6 6 . 
-    . . . . . . . . 6 6 6 6 6 6 6 . 
-    . . . . . . . . . 6 6 6 6 6 . . 
-    `
+0,
+1,
+2,
+3
 ]
 EnergyBar = statusbars.create(3, 20, StatusBarKind.Oxygen)
 EnergyBar.max = 100
@@ -1013,9 +926,11 @@ HealthBar.attachToSprite(mySprite, -24, 0)
 HealthBar.setColor(2, 12)
 HealthBar.setBarBorder(1, 15)
 StartingRoom = true
+text = false
 room1 = false
 room2 = false
 room3 = false
+room4 = false
 game.onUpdate(function () {
     if (OxygenBar.value == 0) {
         game.setGameOverMessage(false, "YOU RAN OUT OF OXYGEN!")
