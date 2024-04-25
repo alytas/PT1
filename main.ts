@@ -90,22 +90,29 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         flashlight.direction = -90
     }
 })
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-	
-})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile22`, function (sprite, location) {
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
     if (room2 == true) {
         tiles.setCurrentTilemap(tilemap`level13`)
         tiles.placeOnTile(mySprite, tiles.getTileLocation(3, 3))
+        spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+        spawn_location_amount = spawn_locations.length
+        enemy_amount = spawn_location_amount
+        for (let index = 0; index < spawn_location_amount; index++) {
+            enemy_spawner()
+        }
         switch_flipped = false
+        multilights.toggleLighting(true)
     } else {
     	
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile24`, function (sprite, location) {
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
     if (room2 == true) {
         tiles.setCurrentTilemap(tilemap`level16`)
         tiles.placeOnTile(mySprite, tiles.getTileLocation(2, 2))
+        info.startCountdown(120)
     } else {
     	
     }
@@ -438,7 +445,9 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile25`, function (sprite, 
     multilights.toggleLighting(false)
     room4 = true
     escape_hatch = true
+    info.stopCountdown()
     tiles.setCurrentTilemap(tilemap`level20`)
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(9, 0))
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.MovingLeft, Predicate.FacingLeft))
@@ -522,9 +531,16 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile9`, function (sprite, location) {
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
     if (room1 == true) {
         tiles.setCurrentTilemap(tilemap`level7`)
         tiles.placeOnTile(mySprite, tiles.getTileLocation(3, 1))
+        spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+        spawn_location_amount = spawn_locations.length
+        enemy_amount = spawn_location_amount
+        for (let index = 0; index < spawn_location_amount; index++) {
+            enemy_spawner()
+        }
         switch_flipped = false
         multilights.toggleLighting(true)
     } else {
@@ -617,6 +633,10 @@ controller.left.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.rule(Predicate.FacingLeft, Predicate.NotMoving)
     )
 })
+info.onCountdownEnd(function () {
+    game.gameOver(false)
+    game.setGameOverMessage(false, "You ran out of time!")
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile21`, function (sprite, location) {
     OxygenBar.value += 25
     tiles.setTileAt(tiles.getTileLocation(location.column, location.row), assets.tile`myTile8`)
@@ -703,8 +723,11 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, location) {
-    decision_maker(game.ask("Pick up the radio?"), randint(0, 1), randint(1, 4))
+    decision_maker(game.ask("Pick up the radio?"), randint(0, 1), randint(0, 3))
     tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
+})
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
+    HealthBar.value += -10
 })
 controller.up.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingUp, Predicate.NotMoving))
@@ -850,11 +873,11 @@ let pigon = false
 let gojo: Sprite = null
 let gojoe = false
 let bosstype = 0
+let projectile: Sprite = null
+let switch_flipped = false
 let enemy_amount = 0
 let spawn_location_amount = 0
 let spawn_locations: tiles.Location[] = []
-let projectile: Sprite = null
-let switch_flipped = false
 let lighting = 0
 let room4 = false
 let room3 = false
@@ -862,6 +885,7 @@ let room2 = false
 let room1 = false
 let text = false
 let StartingRoom = false
+let HealthBar: StatusBarSprite = null
 let OxygenBar: StatusBarSprite = null
 let EnergyBar: StatusBarSprite = null
 let list: number[] = []
@@ -919,7 +943,7 @@ OxygenBar.attachToSprite(mySprite, 4, 0)
 OxygenBar.setColor(9, 12)
 OxygenBar.setBarBorder(1, 15)
 OxygenBar.positionDirection(CollisionDirection.Left)
-let HealthBar = statusbars.create(20, 3, StatusBarKind.Health)
+HealthBar = statusbars.create(20, 3, StatusBarKind.Health)
 HealthBar.max = 100
 HealthBar.value = 100
 HealthBar.attachToSprite(mySprite, -24, 0)
