@@ -221,30 +221,12 @@ function decision_maker (initialQuestion: boolean, dialogue: number, enemies: nu
                 if (story.getLastAnswer() == "Yes, Hello?") {
                     multilights.toggleLighting(true)
                     story.printCharacterText("We can't talk right now, you need to find the power and get rid of them... QUICK.")
-                    tiles.setCurrentTilemap(tilemap`level6`)
-                    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
-                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
-                    spawn_location_amount = spawn_locations.length
-                    enemy_amount = spawn_location_amount
-                    controller.moveSprite(mySprite, 100, 100)
-                    lighting = 1
-                    StartingRoom = false
-                    switch_flipped = false
-                    text = false
+                    doSomething()
                 } else if (story.getLastAnswer() == "Who are you?") {
                     multilights.toggleLighting(true)
                     story.printCharacterText("Thats not important.")
                     story.printCharacterText("You need to find the power and get out... We dont know what they are.")
-                    tiles.setCurrentTilemap(tilemap`level6`)
-                    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
-                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
-                    spawn_location_amount = spawn_locations.length
-                    enemy_amount = spawn_location_amount
-                    controller.moveSprite(mySprite, 100, 100)
-                    lighting = 1
-                    StartingRoom = false
-                    switch_flipped = false
-                    text = false
+                    doSomething()
                 }
             } else if (dialogue == 0) {
                 text = true
@@ -253,30 +235,12 @@ function decision_maker (initialQuestion: boolean, dialogue: number, enemies: nu
                 if (story.getLastAnswer() == "Who are you?") {
                     multilights.toggleLighting(true)
                     story.printCharacterText("[STATIC RADIO NOISES] YOU NEED TO GET OUT NOW [STATIC RADIO NOISES]")
-                    tiles.setCurrentTilemap(tilemap`level6`)
-                    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
-                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
-                    spawn_location_amount = spawn_locations.length
-                    lighting = 1
-                    enemy_amount = spawn_location_amount
-                    StartingRoom = false
-                    switch_flipped = false
-                    text = false
-                    controller.moveSprite(mySprite, 100, 100)
+                    doSomething()
                 } else if (story.getLastAnswer() == "Where am I?") {
                     multilights.toggleLighting(true)
                     story.printCharacterText("Youve awaken from your coma, there's no time to talk...")
                     story.printCharacterText("You need to find the power and get out... NOW.")
-                    tiles.setCurrentTilemap(tilemap`level6`)
-                    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
-                    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
-                    spawn_location_amount = spawn_locations.length
-                    enemy_amount = spawn_location_amount
-                    lighting = 1
-                    StartingRoom = false
-                    switch_flipped = false
-                    text = false
-                    controller.moveSprite(mySprite, 100, 100)
+                    doSomething()
                 } else if (story.getLastAnswer() == "(walk away)") {
                     text = false
                     controller.moveSprite(mySprite, 100, 100)
@@ -441,6 +405,10 @@ function enemy_spawner () {
         }
     }
 }
+scene.onOverlapTile(SpriteKind.Player, img`myTile26`, function (sprite, location) {
+    game.setGameOverMessage(true, "YOU ESCAPED!")
+    game.gameOver(true)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile25`, function (sprite, location) {
     multilights.toggleLighting(false)
     room4 = true
@@ -540,6 +508,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile9`, function (sprite, l
         enemy_amount = spawn_location_amount
         for (let index = 0; index < spawn_location_amount; index++) {
             enemy_spawner()
+            myEnemy = sprites.allOfKind(SpriteKind.Enemy)
         }
         switch_flipped = false
         multilights.toggleLighting(true)
@@ -637,6 +606,10 @@ info.onCountdownEnd(function () {
     game.gameOver(false)
     game.setGameOverMessage(false, "You ran out of time!")
 })
+statusbars.onZero(StatusBarKind.Health, function (status) {
+    game.setGameOverMessage(false, "YOU DIED!")
+    game.gameOver(false)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile21`, function (sprite, location) {
     OxygenBar.value += 25
     tiles.setTileAt(tiles.getTileLocation(location.column, location.row), assets.tile`myTile8`)
@@ -726,8 +699,20 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`tile5`, function (sprite, loc
     decision_maker(game.ask("Pick up the radio?"), randint(0, 1), randint(0, 3))
     tiles.placeOnTile(mySprite, tiles.getTileLocation(6, 4))
 })
+function doSomething () {
+    tiles.setCurrentTilemap(tilemap`level6`)
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(4, 5))
+    spawn_locations = tiles.getTilesByType(assets.tile`myTile10`)
+    spawn_location_amount = spawn_locations.length
+    enemy_amount = spawn_location_amount
+    controller.moveSprite(mySprite, 100, 100)
+    lighting = 1
+    StartingRoom = false
+    switch_flipped = false
+    text = false
+}
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function (sprite, otherSprite) {
-    HealthBar.value += -10
+    HealthBar.value += -1
 })
 controller.up.onEvent(ControllerButtonEvent.Released, function () {
     characterAnimations.setCharacterState(mySprite, characterAnimations.rule(Predicate.FacingUp, Predicate.NotMoving))
@@ -853,6 +838,10 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         flashlight.direction = 90
     }
 })
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite, effects.fire, 500)
+    sprites.destroy(sprite)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile23`, function (sprite, location) {
     multilights.toggleLighting(false)
     room3 = true
@@ -863,6 +852,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite, 
     room2 = true
     switch_flipped = true
 })
+let myEnemy: Sprite[] = []
 let escape_hatch = false
 let zillagod: Sprite = null
 let godzilla = false
@@ -914,7 +904,7 @@ mySprite = sprites.create(img`
 controller.moveSprite(mySprite, 100, 100)
 scene.cameraFollowSprite(mySprite)
 tiles.placeOnTile(mySprite, tiles.getTileLocation(2, 4))
-multilights.addLightSource(mySprite, 4)
+multilights.addLightSource(mySprite, 6)
 multilights.addFlashLightSource(
 mySprite,
 0,
@@ -929,7 +919,7 @@ list = [
 2,
 3
 ]
-EnergyBar = statusbars.create(3, 20, StatusBarKind.Oxygen)
+EnergyBar = statusbars.create(3, 20, StatusBarKind.Energy)
 EnergyBar.max = 100
 EnergyBar.value = 0
 EnergyBar.attachToSprite(mySprite, 8, 0)
@@ -959,6 +949,13 @@ game.onUpdate(function () {
     if (OxygenBar.value == 0) {
         game.setGameOverMessage(false, "YOU RAN OUT OF OXYGEN!")
         game.gameOver(false)
+    }
+})
+game.onUpdate(function () {
+    for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (value.x > mySprite.x - 48 && value.x < mySprite.x + 48 && (value.y > mySprite.y - 48 && value.y < mySprite.y + 48)) {
+            value.follow(mySprite, 50)
+        }
     }
 })
 game.onUpdateInterval(1000, function () {
